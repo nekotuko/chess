@@ -3,12 +3,87 @@
  */
 package org.example;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+/**
+ * 1. Make it so when you open the App, it shows an empty grid with position
+ * labels and different colors for the positions.
+ *
+ * 2. Add pieces to the board. They don't have to move, just exist in the right
+ * positions.
+ *
+ * 3. Implement moving functionality where you can move any piece anywhere,
+ * forget about the rules.
+ *
+ * 4. Add rules for each piece so it can only be moved legally.
+ */
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    private String[] grid = new String[] {
+            " 12345678 ",
+            "a        a",
+            "b        b",
+            "c        c",
+            "..........",
+            " 12345678 ",
+    };
+
+    /**
+     * Implement this to handle clicks.
+     */
+    private static class OnClickEvent extends MouseAdapter {
+        public void mouseClicked(MouseEvent e) {
+            // do something when you're clicked.
+        }
+    }
+
+    private void initGui() {
+        JFrame frame = new JFrame("Chess");
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        /**
+         * Let's use GridLayout, but infer the dimensions from our grid.
+         * JPanel panel = new JPanel(new GridLayout(10, 10));
+         */
+        JPanel panel = new JPanel(new GridLayout(1, 1)); // FIXME
+
+        // This appears to be the resolution of the UI window.
+        panel.setPreferredSize(new Dimension(800, 800));
+
+        JLabel label = new JLabel("SUAD", JLabel.CENTER);
+        /**
+         * OR like this:
+         * JLabel label = new JLabel("" + (i + 1), JLabel.CENTER);
+         */
+        label.addMouseListener(new OnClickEvent()); // optional for handling clicks.
+        label.setFont(label.getFont().deriveFont(24.0f)); // optional
+        label.setHorizontalAlignment(JLabel.CENTER); // optional
+        label.setBackground(new Color(255, 100, 50)); // optional
+        label.setOpaque(true);
+        label.setBackground(Color.white);
+
+        panel.add(label);
+
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        System.out.println("Started the Chess app.");
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new App().initGui();
+            }
+        });
     }
 }
