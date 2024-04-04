@@ -27,12 +27,16 @@ import javax.swing.JPanel;
  */
 public class App {
     private String[] grid = new String[] {
-            " 12345678 ",
-            "a        a",
-            "b        b",
-            "c        c",
-            "..........",
-            " 12345678 ",
+            " abcdefgh ",
+            "8        8",
+            "7        7",
+            "6        6",
+            "5        5",
+            "4        4",
+            "3        3",
+            "2        2",
+            "1        1",
+            " abcdefgh ",
     };
 
     /**
@@ -53,24 +57,34 @@ public class App {
          * Let's use GridLayout, but infer the dimensions from our grid.
          * JPanel panel = new JPanel(new GridLayout(10, 10));
          */
-        JPanel panel = new JPanel(new GridLayout(1, 1)); // FIXME
+        JPanel panel = new JPanel(new GridLayout(grid.length, grid[0].length()));
 
         // This appears to be the resolution of the UI window.
         panel.setPreferredSize(new Dimension(800, 800));
 
-        JLabel label = new JLabel("SUAD", JLabel.CENTER);
-        /**
-         * OR like this:
-         * JLabel label = new JLabel("" + (i + 1), JLabel.CENTER);
-         */
-        label.addMouseListener(new OnClickEvent()); // optional for handling clicks.
-        label.setFont(label.getFont().deriveFont(24.0f)); // optional
-        label.setHorizontalAlignment(JLabel.CENTER); // optional
-        label.setBackground(new Color(255, 100, 50)); // optional
-        label.setOpaque(true);
-        label.setBackground(Color.white);
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length(); j++) {
+                String currLabel = grid[i].substring(j, j + 1);
 
-        panel.add(label);
+                if ((i == 0 || i == grid.length - 1) || (j == 0 || j == grid[0].length() - 1)) {
+                    panel.add(new JLabel(currLabel, JLabel.CENTER));
+                } else {
+                    JLabel gridRectangle = new JLabel();
+                    gridRectangle.addMouseListener(new OnClickEvent());
+                    gridRectangle.setHorizontalAlignment(JLabel.CENTER);
+                    gridRectangle.setFont(gridRectangle.getFont().deriveFont(24.0f));
+                    gridRectangle.setOpaque(true);
+
+                    if ((i + j) % 2 == 0) {
+                        gridRectangle.setBackground(Color.white);
+                    } else {
+                        gridRectangle.setBackground(Color.lightGray);
+                    }
+
+                    panel.add(gridRectangle);
+                }
+            }
+        }
 
         frame.setContentPane(panel);
         frame.pack();
