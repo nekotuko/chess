@@ -44,11 +44,12 @@ public class App {
      */
     private static class OnClickEvent extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
-            // do something when you're clicked.
+            // Refresh GUI:
+
         }
     }
 
-    private void initGui() {
+    private void initGui(ChessBoard board) {
         JFrame frame = new JFrame("Chess");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,10 +70,10 @@ public class App {
                 if ((i == 0 || i == grid.length - 1) || (j == 0 || j == grid[0].length() - 1)) {
                     panel.add(new JLabel(currLabel, JLabel.CENTER));
                 } else {
-                    JLabel gridRectangle = new JLabel();
+                    JLabel gridRectangle = new JLabel(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
                     gridRectangle.addMouseListener(new OnClickEvent());
                     gridRectangle.setHorizontalAlignment(JLabel.CENTER);
-                    gridRectangle.setFont(gridRectangle.getFont().deriveFont(24.0f));
+                    gridRectangle.setFont(gridRectangle.getFont().deriveFont(50.0f));
                     gridRectangle.setOpaque(true);
 
                     if ((i + j) % 2 == 0) {
@@ -83,6 +84,7 @@ public class App {
 
                     panel.add(gridRectangle);
                 }
+
             }
         }
 
@@ -94,9 +96,29 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println("Started the Chess app.");
+
+        // Board layout represented as a string. Defined as pairs of letters:
+        // Prefix:
+        // 'W' - white; 'B' - black.
+        // Suffix:
+        // 'R' - rook; 'N' - knight; 'B' - bishop; 'Q' - queen; 'K' - king;
+        // Space - means no piece.
+        String[] boardLayout = new String[] {
+                "BRBNBBBQBKBBBNBR",
+                "BPBPBPBPBPBPBPBP",
+                "        ",
+                "        ",
+                "        ",
+                "        ",
+                "WPWPWPWPWPWPWPWP",
+                "WRWNWBWQWKWBWNWR",
+        };
+
+        ChessBoard board = new ChessBoard(boardLayout);
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new App().initGui();
+                new App().initGui(board);
             }
         });
     }
