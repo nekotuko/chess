@@ -4,11 +4,13 @@
 package org.example;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,6 +28,11 @@ import javax.swing.JPanel;
  * 4. Add rules for each piece so it can only be moved legally.
  */
 public class App {
+
+    private JFrame frame;
+
+    JPanel panel;
+
     private String[] grid = new String[] {
             " abcdefgh ",
             "8        8",
@@ -42,23 +49,62 @@ public class App {
     /**
      * Implement this to handle clicks.
      */
-    private static class OnClickEvent extends MouseAdapter {
-        public void mouseClicked(MouseEvent e) {
-            // Refresh GUI:
+    private class OnClickEvent extends MouseAdapter {
+        private ChessBoard mBoard;
 
+        public OnClickEvent(ChessBoard board) {
+            mBoard = board;
+        }
+
+        public void mouseClicked(MouseEvent e) {
+            JLabel label = (JLabel) e.getComponent();
+            System.out.println("Click detected: " + label.getText());
+            mBoard.movePiece(new BoardPosition(0, 0), new BoardPosition(1, 1));
+
+            refreshBoardGui(mBoard);
         }
     }
 
+    private void refreshBoardGui(ChessBoard board) {
+        // for (int i = 0; i < grid.length; i++) {
+        // for (int j = 0; j < grid[i].length(); j++) {
+        // if ((i > 0 && i < grid.length - 1) && (j > 0 && j < grid[0].length() - 1)) {
+        // JLabel currLabel = (JLabel) panel.getComponentAt(5, 5);
+        // currLabel.setText("TEST");
+        // }
+        // }
+        // }
+
+        int i = 0;
+
+        Component[] labels = panel.getComponents();
+
+        while (i < grid.length) {
+            int j = 0;
+            while (j < grid[i].length()) {
+                if ((i > 0 && i < grid.length - 1) && (j > 0 && j < grid[0].length() - 1)) {
+                    JLabel currLabel = (JLabel) labels[i * 10 + j];
+                    currLabel.setText(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
+                }
+                j++;
+            }
+            i++;
+        }
+
+        // for (Component c : panel.getComponents()) {
+        // // Confirm this is the best way to access the elements of the panel:
+        // JLabel currLabel = (JLabel) c;
+        // System.out.println(currLabel.getText());
+        // }
+    }
+
     private void initGui(ChessBoard board) {
-        JFrame frame = new JFrame("Chess");
+
+        frame = new JFrame("Chess");
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        /**
-         * Let's use GridLayout, but infer the dimensions from our grid.
-         * JPanel panel = new JPanel(new GridLayout(10, 10));
-         */
-        JPanel panel = new JPanel(new GridLayout(grid.length, grid[0].length()));
+        panel = new JPanel(new GridLayout(grid.length, grid[0].length()));
 
         // This appears to be the resolution of the UI window.
         panel.setPreferredSize(new Dimension(800, 800));
@@ -71,7 +117,7 @@ public class App {
                     panel.add(new JLabel(currLabel, JLabel.CENTER));
                 } else {
                     JLabel gridRectangle = new JLabel(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
-                    gridRectangle.addMouseListener(new OnClickEvent());
+                    gridRectangle.addMouseListener(new OnClickEvent(board));
                     gridRectangle.setHorizontalAlignment(JLabel.CENTER);
                     gridRectangle.setFont(gridRectangle.getFont().deriveFont(50.0f));
                     gridRectangle.setOpaque(true);
@@ -97,21 +143,15 @@ public class App {
     public static void main(String[] args) {
         System.out.println("Started the Chess app.");
 
-        // Board layout represented as a string. Defined as pairs of letters:
-        // Prefix:
-        // 'W' - white; 'B' - black.
-        // Suffix:
-        // 'R' - rook; 'N' - knight; 'B' - bishop; 'Q' - queen; 'K' - king;
-        // Space - means no piece.
         String[] boardLayout = new String[] {
-                "BRBNBBBQBKBBBNBR",
-                "BPBPBPBPBPBPBPBP",
+                "♜♞♝♛♚♝♞♜",
+                "♟♟♟♟♟♟♟♟",
                 "        ",
                 "        ",
                 "        ",
                 "        ",
-                "WPWPWPWPWPWPWPWP",
-                "WRWNWBWQWKWBWNWR",
+                "♙♙♙♙♙♙♙♙",
+                "♖♘♗♕♔♗♘♖",
         };
 
         ChessBoard board = new ChessBoard(boardLayout);

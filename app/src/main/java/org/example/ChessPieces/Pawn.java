@@ -1,14 +1,10 @@
 package org.example.ChessPieces;
 
 public class Pawn extends ChessPiece {
-    Pawn(String pieceColor) {
-        switch (pieceColor) {
-            case "W":
-                this.setmDisplayCharacter('♙');
-                break;
-            case "B":
-                this.setmDisplayCharacter('♟');
-                break;
-        }
+
+    private char mColor;
+
+    Pawn(char piece) {
+        this.setmDisplayCharacter(piece);
     }
 }
