@@ -41,4 +41,14 @@ public class ChessBoard {
         mBoard[targetPos.i][targetPos.j] = mBoard[sourcePos.i][sourcePos.j];
         mBoard[sourcePos.i][sourcePos.j] = null;
     }
+
+    void receiveInput(BoardPosition pos) {
+        if (mActivePiece == null) {
+            mActivePiece = mBoard[pos.i][pos.j];
+        } else if (mBoard[pos.i][pos.j] == mActivePiece) {
+            mActivePiece = null;
+        } else {
+            mBoard[pos.i][pos.j] = mActivePiece;
+        }
+    }
 }
