@@ -13,26 +13,12 @@ public class ChessBoard {
 
         mBoard = new ChessPiece[8][8];
 
-        int i_input = 0;
-        int i_output = 0;
+        for (int i = 0; i < mBoard.length; i++) {
+            for (int j = 0; j < mBoard[i].length; j++) {
+                char currPiece = boardLayout[i].charAt(j);
 
-        while (i_input < mBoard.length) {
-            int j_input = 0;
-            int j_output = 0;
-            while (j_input < boardLayout[i_input].length()) {
-                String currPiece = boardLayout[i_input].substring(j_input, j_input + 2);
-                if (currPiece.equals(" ")) {
-                    j_input++;
-                    j_output++;
-                    break;
-                } else {
-                    mBoard[i_output][j_output] = generator.fromString(currPiece);
-                    j_input = j_input + 2;
-                    j_output++;
-                }
+                mBoard[i][j] = generator.fromString(currPiece);
             }
-            i_input++;
-            i_output++;
         }
     }
 
@@ -51,8 +37,8 @@ public class ChessBoard {
         mActivePiece = null;
     }
 
-    void movePiece(int[] sourceCoords, int[] targetCoords) {
-        mBoard[targetCoords[0]][targetCoords[1]] = mBoard[sourceCoords[0]][sourceCoords[1]];
-        mBoard[sourceCoords[0]][sourceCoords[1]] = null;
+    void movePiece(BoardPosition sourcePos, BoardPosition targetPos) {
+        mBoard[targetPos.i][targetPos.j] = mBoard[sourcePos.i][sourcePos.j];
+        mBoard[sourcePos.i][sourcePos.j] = null;
     }
 }
