@@ -7,11 +7,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,11 +28,11 @@ import javax.swing.JPanel;
  */
 public class App {
 
-    private JFrame frame;
+    private JFrame mFrame;
 
-    JPanel panel;
+    private JPanel mPanel;
 
-    private String[] grid = new String[] {
+    private String[] mBoardGrid = new String[] {
             " abcdefgh ",
             "8        8",
             "7        7",
@@ -47,6 +45,8 @@ public class App {
             " abcdefgh ",
     };
 
+    // Add a flipped board grid map
+
     private class OnClickEvent extends MouseAdapter {
         private ChessBoard mBoard;
 
@@ -55,30 +55,35 @@ public class App {
         }
 
         public void mouseClicked(MouseEvent e) {
-            // JLabel label = (JLabel) e.getComponent();
-            // Point labelPos = label.getLocation();
-            System.out.println(e.getX() + " " + e.getY());
-            System.out.println(panel.getWidth() + " " + panel.getWidth());
-            int x = e.getX() / (panel.getWidth() / 10);
-            int y = e.getY() / (panel.getHeight() / 10);
 
-            System.out.println("Click detected: " + x + " " + y);
-            mBoard.receiveInput(new BoardPosition(x, y));
+            mBoard.receiveInput(getFromClick(e));
 
             refreshBoardGui(mBoard);
         }
+    }
+
+    private BoardPosition getFromClick(MouseEvent e) {
+        int i = e.getX() / (mPanel.getWidth() / 10);
+        int j = e.getY() / (mPanel.getHeight() / 10);
+
+        BoardPosition pos = BoardPosition.fromGUICoords(i, j);
+
+        System.out.println("Click coords: " + i + " " + j);
+        System.out.println("Board coords: " + pos.i + " " + pos.j);
+
+        return BoardPosition.fromGUICoords(i, j);
     }
 
     private void refreshBoardGui(ChessBoard board) {
 
         int i = 0;
 
-        Component[] labels = panel.getComponents();
+        Component[] labels = mPanel.getComponents();
 
-        while (i < grid.length) {
+        while (i < mBoardGrid.length) {
             int j = 0;
-            while (j < grid[i].length()) {
-                if ((i > 0 && i < grid.length - 1) && (j > 0 && j < grid[0].length() - 1)) {
+            while (j < mBoardGrid[i].length()) {
+                if ((i > 0 && i < mBoardGrid.length - 1) && (j > 0 && j < mBoardGrid[0].length() - 1)) {
                     JLabel currLabel = (JLabel) labels[i * 10 + j];
                     currLabel.setText(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
                 }
@@ -91,25 +96,23 @@ public class App {
 
     private void initGui(ChessBoard board) {
 
-        frame = new JFrame("Chess");
+        mFrame = new JFrame("Chess");
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        panel = new JPanel(new GridLayout(grid.length, grid[0].length()));
-        panel.addMouseListener(new OnClickEvent(board));
+        mPanel = new JPanel(new GridLayout(mBoardGrid.length, mBoardGrid[0].length()));
+        mPanel.setPreferredSize(new Dimension(800, 800));
 
-        // This appears to be the resolution of the UI window.
-        panel.setPreferredSize(new Dimension(800, 800));
+        mPanel.addMouseListener(new OnClickEvent(board));
 
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length(); j++) {
-                String currLabel = grid[i].substring(j, j + 1);
+        for (int i = 0; i < mBoardGrid.length; i++) {
+            for (int j = 0; j < mBoardGrid[i].length(); j++) {
+                String currLabel = mBoardGrid[i].substring(j, j + 1);
 
-                if ((i == 0 || i == grid.length - 1) || (j == 0 || j == grid[0].length() - 1)) {
-                    panel.add(new JLabel(currLabel, JLabel.CENTER));
+                if ((i == 0 || i == mBoardGrid.length - 1) || (j == 0 || j == mBoardGrid[0].length() - 1)) {
+                    mPanel.add(new JLabel(currLabel, JLabel.CENTER));
                 } else {
                     JLabel gridRectangle = new JLabel(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
-                    // gridRectangle.addMouseListener(new OnClickEvent(board));
                     gridRectangle.setHorizontalAlignment(JLabel.CENTER);
                     gridRectangle.setFont(gridRectangle.getFont().deriveFont(50.0f));
                     gridRectangle.setOpaque(true);
@@ -120,16 +123,16 @@ public class App {
                         gridRectangle.setBackground(Color.lightGray);
                     }
 
-                    panel.add(gridRectangle);
+                    mPanel.add(gridRectangle);
                 }
 
             }
         }
 
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        mFrame.setContentPane(mPanel);
+        mFrame.pack();
+        mFrame.setLocationRelativeTo(null);
+        mFrame.setVisible(true);
     }
 
     public static void main(String[] args) {

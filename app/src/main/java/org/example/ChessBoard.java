@@ -4,7 +4,7 @@ import org.example.ChessPieces.ChessPiece;
 import org.example.ChessPieces.ChessPieceGenerator;
 
 public class ChessBoard {
-    private ChessPiece mActivePiece;
+    private BoardPosition mActivePiecePosition;
     private ChessPiece[][] mBoard;
 
     ChessBoard(String[] boardLayout) {
@@ -29,26 +29,18 @@ public class ChessBoard {
         return ' ';
     }
 
-    void toggleActivePiece(ChessPiece piece) {
-        mActivePiece = piece;
-    }
-
-    void toggleActivePiece() {
-        mActivePiece = null;
-    }
-
-    void movePiece(BoardPosition sourcePos, BoardPosition targetPos) {
-        mBoard[targetPos.i][targetPos.j] = mBoard[sourcePos.i][sourcePos.j];
-        mBoard[sourcePos.i][sourcePos.j] = null;
-    }
-
     void receiveInput(BoardPosition pos) {
-        if (mActivePiece == null) {
-            mActivePiece = mBoard[pos.i][pos.j];
-        } else if (mBoard[pos.i][pos.j] == mActivePiece) {
-            mActivePiece = null;
+        if (pos == null) {
+            return;
+        }
+        if (mActivePiecePosition == null) {
+            mActivePiecePosition = pos;
+        } else if (mBoard[pos.i][pos.j] == mBoard[mActivePiecePosition.i][mActivePiecePosition.j]) {
+            mActivePiecePosition = null;
         } else {
-            mBoard[pos.i][pos.j] = mActivePiece;
+            mBoard[pos.i][pos.j] = mBoard[mActivePiecePosition.i][mActivePiecePosition.j];
+            mBoard[mActivePiecePosition.i][mActivePiecePosition.j] = null;
+            mActivePiecePosition = null;
         }
     }
 }
