@@ -30,17 +30,35 @@ public class ChessBoard {
     }
 
     void receiveInput(BoardPosition pos) {
+        // Avoid even passing pos if it's null
         if (pos == null) {
             return;
         }
-        if (mActivePiecePosition == null) {
-            mActivePiecePosition = pos;
-        } else if (mBoard[pos.i][pos.j] == mBoard[mActivePiecePosition.i][mActivePiecePosition.j]) {
+
+        // Deactivaate active piece
+        if (BoardPosition.boardPositionIsSame(mActivePiecePosition, pos)) {
             mActivePiecePosition = null;
+            return;
+        }
+        if (mActivePiecePosition == null) {
+            if (mBoard[pos.i][pos.j] != null) {
+                mActivePiecePosition = pos;
+            }
         } else {
             mBoard[pos.i][pos.j] = mBoard[mActivePiecePosition.i][mActivePiecePosition.j];
             mBoard[mActivePiecePosition.i][mActivePiecePosition.j] = null;
             mActivePiecePosition = null;
         }
+
+        // if (mActivePiecePosition == null) {
+        // mActivePiecePosition = pos;
+        // } else if (BoardPosition.boardPositionIsSame(pos, mActivePiecePosition)) {
+        // mActivePiecePosition = null;
+        // } else if (mActivePiecePosition != null) {
+        // mBoard[pos.i][pos.j] =
+        // mBoard[mActivePiecePosition.i][mActivePiecePosition.j];
+        // mBoard[mActivePiecePosition.i][mActivePiecePosition.j] = null;
+        // mActivePiecePosition = null;
+        // }
     }
 }
