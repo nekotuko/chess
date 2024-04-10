@@ -55,7 +55,7 @@ public class App {
         }
 
         public void mouseClicked(MouseEvent e) {
-
+            // Shouldn't be called if click is outside of the board
             mBoard.receiveInput(getFromClick(e));
 
             refreshBoardGui(mBoard);
@@ -63,8 +63,8 @@ public class App {
     }
 
     private BoardPosition getFromClick(MouseEvent e) {
-        int i = e.getX() / (mPanel.getWidth() / 10);
-        int j = e.getY() / (mPanel.getHeight() / 10);
+        int i = e.getY() / (mPanel.getHeight() / 10);
+        int j = e.getX() / (mPanel.getWidth() / 10);
 
         BoardPosition pos = BoardPosition.fromGUICoords(i, j);
 
