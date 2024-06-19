@@ -33,20 +33,30 @@ public class App {
     private JPanel mPanel;
 
     private String[] mBoardGrid = new String[] {
-            " abcdefgh ",
-            "8        8",
-            "7        7",
-            "6        6",
-            "5        5",
-            "4        4",
-            "3        3",
-            "2        2",
-            "1        1",
-            " abcdefgh ",
+        " abcdefgh ",
+        "8        8",
+        "7        7",
+        "6        6",
+        "5        5",
+        "4        4",
+        "3        3",
+        "2        2",
+        "1        1",
+        " abcdefgh ",
     };
 
-    // Add a flipped board grid map
-
+    // TODO: Check if this is the best way to declare 'mBoardLayout'
+    private static String[] mBoardLayout = new String[] {
+            "♜♞♝♛♚♝♞♜",
+            "♟♟♟♟♟♟♟♟",
+            "        ",
+            "        ",
+            "        ",
+            "        ",
+            "♙♙♙♙♙♙♙♙",
+            "♖♘♗♕♔♗♘♖",
+    };
+    
     private class OnClickEvent extends MouseAdapter {
         private ChessBoard mBoard;
 
@@ -117,6 +127,7 @@ public class App {
                     gridRectangle.setFont(gridRectangle.getFont().deriveFont(50.0f));
                     gridRectangle.setOpaque(true);
 
+                    // TODO: Check if this can cause issues:
                     if ((i + j) % 2 == 0) {
                         gridRectangle.setBackground(Color.white);
                     } else {
@@ -138,18 +149,7 @@ public class App {
     public static void main(String[] args) {
         System.out.println("Started the Chess app.");
 
-        String[] boardLayout = new String[] {
-                "♜♞♝♛♚♝♞♜",
-                "♟♟♟♟♟♟♟♟",
-                "        ",
-                "        ",
-                "        ",
-                "        ",
-                "♙♙♙♙♙♙♙♙",
-                "♖♘♗♕♔♗♘♖",
-        };
-
-        ChessBoard board = new ChessBoard(boardLayout);
+        ChessBoard board = new ChessBoard(mBoardLayout);
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
