@@ -1,12 +1,8 @@
 package org.example.ChessPieces;
 
-public class ChessPiece {
+// A generic class for all chess pieces.
+public abstract class ChessPiece {
     private char mDisplayCharacter;
-    private char mColor;
-
-    ChessPiece() {
-
-    }
 
     public void setmDisplayCharacter(char displayCharacter) {
         this.mDisplayCharacter = displayCharacter;
@@ -15,4 +11,9 @@ public class ChessPiece {
     public char getmDisplayCharacter() {
         return this.mDisplayCharacter;
     }
+
+    public abstract int[][] getLegalPositions(int[] currPos);
+
+    // For premoves, implement later:
+    public abstract int[][] getAllPossiblePositions();
 }

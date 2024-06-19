@@ -9,15 +9,33 @@ public class BoardPosition {
         this.j = j;
     }
 
+    // Method to check if a position is valid
+    public static boolean isValid(int i, int j) {
+        return i >= 0 && i < 8 && j >= 0 && j < 8;
+    }
+
+    // Method to return a new BoardPosition object from GUI coordinates
     public static BoardPosition fromGUICoords(int i, int j) {
-        if (i >= 1 || i <= 8 || j >= 1 || j <= 8) {
-            return new BoardPosition(i - 1, j - 1);
+        if (isValid(i - 1, j - 1)) {
+            return new BoardPosition( i -1,j-1);
         }
         return null;
     }
 
-    // Implement override .equals. Compares references, values, whether both are the same.
-    public static boolean boardPositionIsSame(BoardPosition a, BoardPosition b) {
-        return (a != null && b != null) && (a.i == b.i && a.j == b.j);
+    // Overriden method to compare if two BoardPosition objects are equal:
+    @Override
+    public boolean equals(Object obj) {
+        // Check if the argument is a reference to the object itself
+        if (this == obj) {
+            return true;
+        }
+        // Check if the argument is not of the type 'BoardPosition'
+        if (!(obj instanceof BoardPosition)) {
+            return false;
+        }
+        // Cast the argument to 'BoardPosition' type, then compare the fields
+        BoardPosition pos = (BoardPosition) obj;
+        return this.i == pos.i && this.j == pos.j;
     }
+
 }

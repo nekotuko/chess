@@ -1,5 +1,6 @@
 package org.example.ChessPieces;
 
+// This class generates pieces from the list of allowable characters.
 public class ChessPieceGenerator {
 
     public ChessPiece fromString(char piece) {

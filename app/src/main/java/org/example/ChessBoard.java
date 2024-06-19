@@ -11,7 +11,8 @@ public class ChessBoard {
 
         ChessPieceGenerator generator = new ChessPieceGenerator();
 
-        mBoard = new ChessPiece[8][8];
+        // TODO: Check if it's useful to declare the size of 'mBoard' dynamically instead of a fixed 8x8 size
+        mBoard = new ChessPiece[boardLayout.length][boardLayout[0].length()];
 
         for (int i = 0; i < mBoard.length; i++) {
             for (int j = 0; j < mBoard[i].length; j++) {
@@ -36,7 +37,7 @@ public class ChessBoard {
         }
 
         // Deactivaate active piece
-        if (BoardPosition.boardPositionIsSame(mActivePiecePosition, pos)) {
+        if (pos.equals(mActivePiecePosition)) {
             mActivePiecePosition = null;
             return;
         }
