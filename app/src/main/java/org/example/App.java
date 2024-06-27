@@ -3,12 +3,12 @@
  */
 package org.example;
 
-import java.awt.Color;
+import java.util.Set;
+import java.util.HashSet;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,20 +29,22 @@ import javax.swing.JPanel;
 public class App {
 
     private JFrame mFrame;
-
     private JPanel mPanel;
+    private Set<CustomLabel> mBoardLabels;
+
+    private ChessBoard mBoard;
 
     private String[] mBoardGrid = new String[] {
-        " abcdefgh ",
-        "8        8",
-        "7        7",
-        "6        6",
-        "5        5",
-        "4        4",
-        "3        3",
-        "2        2",
-        "1        1",
-        " abcdefgh ",
+            " abcdefgh ",
+            "8        8",
+            "7        7",
+            "6        6",
+            "5        5",
+            "4        4",
+            "3        3",
+            "2        2",
+            "1        1",
+            " abcdefgh ",
     };
 
     // TODO: Check if this is the best way to declare 'mBoardLayout'
@@ -56,55 +58,25 @@ public class App {
             "♙♙♙♙♙♙♙♙",
             "♖♘♗♕♔♗♘♖",
     };
-    
-    private class OnClickEvent extends MouseAdapter {
-        private ChessBoard mBoard;
 
-        public OnClickEvent(ChessBoard board) {
-            mBoard = board;
-        }
-
-        public void mouseClicked(MouseEvent e) {
-            // Shouldn't be called if click is outside of the board
-            mBoard.receiveInput(getFromClick(e));
-
-            refreshBoardGui(mBoard);
+    void refreshGuiSquares() {
+        for (CustomLabel currBoardLabel : mBoardLabels) {
+            currBoardLabel.refresh();
         }
     }
 
-    private BoardPosition getFromClick(MouseEvent e) {
-        int i = e.getY() / (mPanel.getHeight() / 10);
-        int j = e.getX() / (mPanel.getWidth() / 10);
+    private void init() {
+        // Build the chess board:
+        mBoard = new ChessBoard(mBoardLayout);
 
-        BoardPosition pos = BoardPosition.fromGUICoords(i, j);
+        // Initialize GUI:
+        initGui();
 
-        System.out.println("Click coords: " + i + " " + j);
-        System.out.println("Board coords: " + pos.i + " " + pos.j);
-
-        return BoardPosition.fromGUICoords(i, j);
+        // Update GUI based on chess board:
+        refreshGuiSquares();
     }
 
-    private void refreshBoardGui(ChessBoard board) {
-
-        int i = 0;
-
-        Component[] labels = mPanel.getComponents();
-
-        while (i < mBoardGrid.length) {
-            int j = 0;
-            while (j < mBoardGrid[i].length()) {
-                if ((i > 0 && i < mBoardGrid.length - 1) && (j > 0 && j < mBoardGrid[0].length() - 1)) {
-                    JLabel currLabel = (JLabel) labels[i * 10 + j];
-                    currLabel.setText(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
-                }
-                j++;
-            }
-            i++;
-        }
-
-    }
-
-    private void initGui(ChessBoard board) {
+    private void initGui() {
 
         mFrame = new JFrame("Chess");
 
@@ -113,30 +85,19 @@ public class App {
         mPanel = new JPanel(new GridLayout(mBoardGrid.length, mBoardGrid[0].length()));
         mPanel.setPreferredSize(new Dimension(800, 800));
 
-        mPanel.addMouseListener(new OnClickEvent(board));
+        mBoardLabels = new HashSet<CustomLabel>();
 
         for (int i = 0; i < mBoardGrid.length; i++) {
             for (int j = 0; j < mBoardGrid[i].length(); j++) {
-                String currLabel = mBoardGrid[i].substring(j, j + 1);
 
+                // If the coordinates are at the border, grab the label and create a refular JLabel:
                 if ((i == 0 || i == mBoardGrid.length - 1) || (j == 0 || j == mBoardGrid[0].length() - 1)) {
-                    mPanel.add(new JLabel(currLabel, JLabel.CENTER));
-                } else {
-                    JLabel gridRectangle = new JLabel(Character.toString(board.getPieceCharFromCoords(i - 1, j - 1)));
-                    gridRectangle.setHorizontalAlignment(JLabel.CENTER);
-                    gridRectangle.setFont(gridRectangle.getFont().deriveFont(50.0f));
-                    gridRectangle.setOpaque(true);
-
-                    // TODO: Check if this can cause issues:
-                    if ((i + j) % 2 == 0) {
-                        gridRectangle.setBackground(Color.white);
-                    } else {
-                        gridRectangle.setBackground(Color.lightGray);
-                    }
-
-                    mPanel.add(gridRectangle);
+                    mPanel.add(new JLabel(mBoardGrid[i].substring(j, j + 1), JLabel.CENTER));
+                } else { // Else create a blank 'CustomLabel':
+                    CustomLabel currLabel = new CustomLabel(this, mBoard, i - 1, j - 1, "");
+                    mPanel.add(currLabel);
+                    mBoardLabels.add(currLabel);
                 }
-
             }
         }
 
@@ -149,11 +110,9 @@ public class App {
     public static void main(String[] args) {
         System.out.println("Started the Chess app.");
 
-        ChessBoard board = new ChessBoard(mBoardLayout);
-
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new App().initGui(board);
+                new App().init();
             }
         });
     }

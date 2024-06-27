@@ -5,11 +5,15 @@ public class King extends ChessPiece {
         this.setmDisplayCharacter(piece);
     }
 
-    public int[] getLegalPositions(int currPos) {
-        
+    @Override
+    public int[][] getLegalPositions(int[] currPos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getLegalPositions'");
     }
 
-    public int[] getAllPossiblePositions() {
-        return null;
+    @Override
+    public int[][] getAllPossiblePositions(int[] currPos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllPossiblePositions'");
     }
 }

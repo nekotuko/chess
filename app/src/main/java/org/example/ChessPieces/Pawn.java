@@ -12,14 +12,13 @@ public class Pawn extends ChessPiece {
 
     @Override
     public int[][] getLegalPositions(int[] currPos) {
-        
-        // TODO Auto-generated method stub
+        // TODO: Implement
         throw new UnsupportedOperationException("Unimplemented method 'getLegalPositions'");
     }
 
     @Override
     public int[][] getAllPossiblePositions(int[] currPos) {
-        // Check with valid positions and return them
-        return new int[][] { currPos[0] + mDirection, currPos[1] };
+        // TODO: Implement
+        throw new UnsupportedOperationException("Unimplemented method 'getAllPossiblePositions'");
     }
 }
