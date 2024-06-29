@@ -1,8 +1,5 @@
 package org.example;
 
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.UncaughtExceptionHandlers;
-
 public class BoardPosition {
     public final int i;
     public final int j;
@@ -12,12 +9,54 @@ public class BoardPosition {
         this.j = j;
     }
 
+    // Singleton class to represent an invalid position. Useful for chaining moves:
+    public static class InvalidBoardPosition extends BoardPosition {
+        private static final InvalidBoardPosition mInstance = new InvalidBoardPosition();
+
+        private InvalidBoardPosition() {
+            super(-1, -1);
+        }
+
+        public static InvalidBoardPosition getInstance() {
+            return mInstance;
+        }
+
+        @Override
+        public boolean isValid() {
+            return false;
+        }
+
+        @Override
+        public BoardPosition right() {
+            return this;
+        }
+
+        @Override
+        public BoardPosition left() {
+            return this;
+        }
+
+        @Override
+        public BoardPosition ahead() {
+            return this;
+        }
+
+        @Override
+        public BoardPosition behind() {
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj;
+        }
+    }
+
     public static BoardPosition fromCoords(int i, int j) {
         if (isValid(i, j)) {
             return new BoardPosition(i, j);
         } else {
-            // TODO: Check the proper exception type for this:
-            throw new UnsupportedOperationException("Attempted to init an invalid position.");
+            return InvalidBoardPosition.getInstance();
         }
 
     }
@@ -30,35 +69,35 @@ public class BoardPosition {
         return i >= 0 && i < 8 && j >= 0 && j < 8;
     }
 
-    public static BoardPosition rightOf(BoardPosition pos) {
-        if (BoardPosition.isValid(pos.i, pos.j + 1)) {
-            return new BoardPosition(pos.i, pos.j + 1);
+    public BoardPosition right() {
+        if (isValid(this.i, this.j + 1)) {
+            return new BoardPosition(this.i, this.j + 1);
         } else {
-            return null;
+            return InvalidBoardPosition.getInstance();
         }
     }
 
-    public static BoardPosition leftOf(BoardPosition pos) {
-        if (BoardPosition.isValid(pos.i, pos.j - 1)) {
-            return new BoardPosition(pos.i, pos.j - 1);
+    public BoardPosition left() {
+        if (isValid(this.i, this.j - 1)) {
+            return new BoardPosition(this.i, this.j - 1);
         } else {
-            return null;
+            return InvalidBoardPosition.getInstance();
         }
     }
 
-    public static BoardPosition upOf(BoardPosition pos) {
-        if (BoardPosition.isValid(pos.i + 1, pos.j)) {
-            return new BoardPosition(pos.i + 1, pos.j);
+    public BoardPosition ahead() {
+        if (isValid(this.i + 1, this.j)) {
+            return new BoardPosition(this.i + 1, this.j);
         } else {
-            return null;
+            return InvalidBoardPosition.getInstance();
         }
     }
 
-    public static BoardPosition downOf(BoardPosition pos) {
-        if (BoardPosition.isValid(pos.i - 1, pos.j)) {
-            return new BoardPosition(pos.i - 1, pos.j);
+    public BoardPosition behind() {
+        if (isValid(this.i - 1, this.j)) {
+            return new BoardPosition(this.i - 1, this.j);
         } else {
-            return null;
+            return InvalidBoardPosition.getInstance();
         }
     }
 

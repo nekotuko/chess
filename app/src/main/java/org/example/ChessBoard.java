@@ -4,8 +4,10 @@ import org.example.ChessPieces.ChessPiece;
 import org.example.ChessPieces.ChessPieceGenerator;
 
 public class ChessBoard {
-    private BoardPosition mActivePiecePosition;
     private ChessPiece[][] mBoard;
+
+    private BoardPosition mActivePiecePosition;
+    private boolean[][] mActivePieceLegalMoves;
 
     ChessBoard(String[] boardLayout) {
 
@@ -19,12 +21,13 @@ public class ChessBoard {
             for (int j = 0; j < mBoard[i].length; j++) {
                 char currPiece = boardLayout[i].charAt(j);
 
-                mBoard[i][j] = generator.fromString(currPiece);
+                // TODO: flip 'i' to match GUI ordering:
+                mBoard[7 - i][j] = generator.fromString(currPiece);
             }
         }
     }
 
-    char getPieceCharFromCoords(BoardPosition pos) {
+    char getPieceCharFromPos(BoardPosition pos) {
         if (pos.isValid() && mBoard[pos.i][pos.j] != null) {
             return mBoard[pos.i][pos.j].getmDisplayCharacter();
         } else {
@@ -32,33 +35,75 @@ public class ChessBoard {
         }
     }
 
+    ChessPiece getPieceFromPos(BoardPosition pos) {
+        if (pos.isValid() && mBoard[pos.i][pos.j] != null) {
+            return mBoard[pos.i][pos.j];
+        } else {
+            return null;
+        }
+    }
+
+    boolean positionIsOccupied(BoardPosition pos) {
+        return (mBoard[pos.i][pos.j] != null);
+    }
+
     boolean positionIsActive(BoardPosition pos) {
         return (pos.equals(mActivePiecePosition));
     }
 
+    boolean positionIsALegalMove(BoardPosition pos) {
+        if (mActivePieceLegalMoves != null) {
+            return mActivePieceLegalMoves[pos.i][pos.j];
+        } else {
+            return false;
+        }
+    }
+
     void receiveInput(BoardPosition pos) {
         // Avoid even passing pos if it's null
+        // TODO this can never be null as it's only called by CustomLabel listener, that
+        // only stores valid BoardPositions
         if (pos == null) {
             return;
         }
 
-        // Deactivaate active piece
+        // Deactivate active piece
         if (pos.equals(mActivePiecePosition)) {
             mActivePiecePosition = null;
+            mActivePieceLegalMoves = null;
             return;
         }
 
         // Activate a position if no position is active:
         if (mActivePiecePosition == null) {
-            if (mBoard[pos.i][pos.j] != null) {
+            ChessPiece pieceAtPos = getPieceFromPos(pos);
+            if (pieceAtPos != null) {
                 mActivePiecePosition = pos;
+                mActivePieceLegalMoves = pieceAtPos.getAllPossiblePositions(pos);
             }
         } else { // Else move the piece if possible:
+
             mBoard[pos.i][pos.j] = mBoard[mActivePiecePosition.i][mActivePiecePosition.j];
             mBoard[mActivePiecePosition.i][mActivePiecePosition.j] = null;
             mActivePiecePosition = null;
+
+            movePiece(mActivePiecePosition, pos);
         }
     }
 
-    
+    void movePiece(BoardPosition source, BoardPosition target) {
+
+        mActivePiecePosition = null;
+        mActivePieceLegalMoves = null;
+    }
+
+    // boolean[][] getActivePieceLe galPositions() {
+    // boolean[][] visited = new boolean[8][8];
+    // boolean[][] activePieceLegalMoves = new boolean[8][8];
+
+    // BoardPosition origin = mActivePiecePosition;
+    // visited[origin.i][origin.j] = true;
+
+    // }
+
 }

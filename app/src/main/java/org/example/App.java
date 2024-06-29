@@ -6,7 +6,6 @@ package org.example;
 import java.util.Set;
 import java.util.HashSet;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -30,7 +29,7 @@ public class App {
 
     private JFrame mFrame;
     private JPanel mPanel;
-    private Set<CustomLabel> mBoardLabels;
+    private Set<CustomLabel> mBoardLabelSet;
 
     private ChessBoard mBoard;
 
@@ -60,7 +59,7 @@ public class App {
     };
 
     void refreshGuiSquares() {
-        for (CustomLabel currBoardLabel : mBoardLabels) {
+        for (CustomLabel currBoardLabel : mBoardLabelSet) {
             currBoardLabel.refresh();
         }
     }
@@ -85,18 +84,20 @@ public class App {
         mPanel = new JPanel(new GridLayout(mBoardGrid.length, mBoardGrid[0].length()));
         mPanel.setPreferredSize(new Dimension(800, 800));
 
-        mBoardLabels = new HashSet<CustomLabel>();
+        mBoardLabelSet = new HashSet<CustomLabel>();
 
         for (int i = 0; i < mBoardGrid.length; i++) {
             for (int j = 0; j < mBoardGrid[i].length(); j++) {
 
-                // If the coordinates are at the border, grab the label and create a refular JLabel:
+                // If the coordinates are at the border, grab the label and create a refular
+                // JLabel:
                 if ((i == 0 || i == mBoardGrid.length - 1) || (j == 0 || j == mBoardGrid[0].length() - 1)) {
                     mPanel.add(new JLabel(mBoardGrid[i].substring(j, j + 1), JLabel.CENTER));
                 } else { // Else create a blank 'CustomLabel':
-                    CustomLabel currLabel = new CustomLabel(this, mBoard, i - 1, j - 1, "");
+                    // TODO: flip 'i' to match GUI ordering:
+                    CustomLabel currLabel = new CustomLabel(this, mBoard, 7 - (i - 1), j - 1, "");
                     mPanel.add(currLabel);
-                    mBoardLabels.add(currLabel);
+                    mBoardLabelSet.add(currLabel);
                 }
             }
         }
