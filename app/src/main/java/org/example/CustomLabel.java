@@ -39,17 +39,13 @@ public class CustomLabel extends JLabel {
         this.setBackground(mBackgroundColor);
 
         // Add a mouse listener to the label:
-        addMouseListener(new OnClickEvent(this));
+        addMouseListener(new OnClickEvent());
     }
 
     private class OnClickEvent extends MouseAdapter {
-        private CustomLabel mLabel;
-
-        public OnClickEvent(CustomLabel label) {
-            mLabel = label;
-        }
 
         public void mouseClicked(MouseEvent e) {
+
             // Pass input to the chess board and let it handle logic:
             mBoard.receiveInput(mPos);
 
@@ -59,7 +55,7 @@ public class CustomLabel extends JLabel {
     }
 
     // Change diplay of CustomLabel based on whether the piece is active:
-    public void updateActive() {
+    void updateActive() {
         if (mBoard.positionIsActive(mPos)) {
             this.setBackground(Color.cyan);
         } else {
@@ -67,11 +63,22 @@ public class CustomLabel extends JLabel {
         }
     }
 
+    void updateLegalMove() {
+        if (!mBoard.positionIsActive(mPos)) {
+            if (mBoard.positionIsALegalMove(mPos)) {
+                this.setBackground(Color.magenta);
+            } else {
+                this.setBackground(mBackgroundColor);
+            }
+        }
+    }
+
     public void refresh() {
         // Get display character:
-        this.setText(Character.toString(mBoard.getPieceCharFromCoords(mPos)));
+        this.setText(Character.toString(mBoard.getPieceCharFromPos(mPos)));
 
-        // Check if is active:
+        // Check if is active or is a legal move and update display:
         updateActive();
+        updateLegalMove();
     }
 }
