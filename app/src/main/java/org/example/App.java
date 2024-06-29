@@ -3,11 +3,11 @@
  */
 package org.example;
 
-import java.awt.Color;
+import java.util.Set;
+import java.util.HashSet;
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +26,14 @@ import javax.swing.JPanel;
  * 4. Add rules for each piece so it can only be moved legally.
  */
 public class App {
-    private String[] grid = new String[] {
+
+    private JFrame mFrame;
+    private JPanel mPanel;
+    private Set<CustomLabel> mBoardLabelSet;
+
+    private ChessBoard mBoard;
+
+    private String[] mBoardGrid = new String[] {
             " abcdefgh ",
             "8        8",
             "7        7",
@@ -39,64 +46,74 @@ public class App {
             " abcdefgh ",
     };
 
-    /**
-     * Implement this to handle clicks.
-     */
-    private static class OnClickEvent extends MouseAdapter {
-        public void mouseClicked(MouseEvent e) {
-            // do something when you're clicked.
+    // TODO: Check if this is the best way to declare 'mBoardLayout'
+    private static String[] mBoardLayout = new String[] {
+            "♜♞♝♛♚♝♞♜",
+            "♟♟♟♟♟♟♟♟",
+            "        ",
+            "        ",
+            "        ",
+            "        ",
+            "♙♙♙♙♙♙♙♙",
+            "♖♘♗♕♔♗♘♖",
+    };
+
+    void refreshGuiSquares() {
+        for (CustomLabel currBoardLabel : mBoardLabelSet) {
+            currBoardLabel.refresh();
         }
     }
 
+    private void init() {
+        // Build the chess board:
+        mBoard = new ChessBoard(mBoardLayout);
+
+        // Initialize GUI:
+        initGui();
+
+        // Update GUI based on chess board:
+        refreshGuiSquares();
+    }
+
     private void initGui() {
-        JFrame frame = new JFrame("Chess");
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mFrame = new JFrame("Chess");
 
-        /**
-         * Let's use GridLayout, but infer the dimensions from our grid.
-         * JPanel panel = new JPanel(new GridLayout(10, 10));
-         */
-        JPanel panel = new JPanel(new GridLayout(grid.length, grid[0].length()));
+        mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // This appears to be the resolution of the UI window.
-        panel.setPreferredSize(new Dimension(800, 800));
+        mPanel = new JPanel(new GridLayout(mBoardGrid.length, mBoardGrid[0].length()));
+        mPanel.setPreferredSize(new Dimension(800, 800));
 
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length(); j++) {
-                String currLabel = grid[i].substring(j, j + 1);
+        mBoardLabelSet = new HashSet<CustomLabel>();
 
-                if ((i == 0 || i == grid.length - 1) || (j == 0 || j == grid[0].length() - 1)) {
-                    panel.add(new JLabel(currLabel, JLabel.CENTER));
-                } else {
-                    JLabel gridRectangle = new JLabel();
-                    gridRectangle.addMouseListener(new OnClickEvent());
-                    gridRectangle.setHorizontalAlignment(JLabel.CENTER);
-                    gridRectangle.setFont(gridRectangle.getFont().deriveFont(24.0f));
-                    gridRectangle.setOpaque(true);
+        for (int i = 0; i < mBoardGrid.length; i++) {
+            for (int j = 0; j < mBoardGrid[i].length(); j++) {
 
-                    if ((i + j) % 2 == 0) {
-                        gridRectangle.setBackground(Color.white);
-                    } else {
-                        gridRectangle.setBackground(Color.lightGray);
-                    }
-
-                    panel.add(gridRectangle);
+                // If the coordinates are at the border, grab the label and create a refular
+                // JLabel:
+                if ((i == 0 || i == mBoardGrid.length - 1) || (j == 0 || j == mBoardGrid[0].length() - 1)) {
+                    mPanel.add(new JLabel(mBoardGrid[i].substring(j, j + 1), JLabel.CENTER));
+                } else { // Else create a blank 'CustomLabel':
+                    // TODO: flip 'i' to match GUI ordering:
+                    CustomLabel currLabel = new CustomLabel(this, mBoard, 7 - (i - 1), j - 1, "");
+                    mPanel.add(currLabel);
+                    mBoardLabelSet.add(currLabel);
                 }
             }
         }
 
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        mFrame.setContentPane(mPanel);
+        mFrame.pack();
+        mFrame.setLocationRelativeTo(null);
+        mFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
         System.out.println("Started the Chess app.");
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new App().initGui();
+                new App().init();
             }
         });
     }
