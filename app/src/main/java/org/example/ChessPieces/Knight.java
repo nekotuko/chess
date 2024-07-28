@@ -1,58 +1,73 @@
 package org.example.ChessPieces;
 
 import org.example.BoardPosition;
-import org.example.BoardPosition.InvalidBoardPosition;
+import org.example.ChessBoard;
+
+import java.util.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Knight extends ChessPiece {
-    Knight(char piece) {
-        super(piece);
+    Knight(char piece, ChessBoard board) {
+        super(piece, board);
     }
 
     @Override
-    public boolean[][] getAllPossiblePositions(BoardPosition pos) {
-        boolean[][] legalPositions = new boolean[8][8];
+    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+        List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check all L shaped moves:
         // TODO: check if there's a way to call these as curr =
         // pos.ahead().ahead().left() etc.
-        BoardPosition curr = pos.ahead().ahead().left();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        Optional<BoardPosition> movedPosition;
+
+        // Check 2 ahead, 1 left:
+        movedPosition = pos.ahead().flatMap(BoardPosition::ahead).flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.ahead().ahead().right();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 2 ahead, 1 right:
+        movedPosition = pos.ahead().flatMap(BoardPosition::ahead).flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.behind().behind().left();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 2 behind, 1 left:
+        movedPosition = pos.behind().flatMap(BoardPosition::behind).flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.behind().behind().right();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 2 behind, 1 right:
+        movedPosition = pos.behind().flatMap(BoardPosition::behind).flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.left().left().ahead();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 1 ahead, 2 left:
+        movedPosition = pos.ahead().flatMap(BoardPosition::left).flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.left().left().behind();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 1 ahead, 2 right:
+        movedPosition = pos.ahead().flatMap(BoardPosition::right).flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.right().right().ahead();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 1 behind, 2 left:
+        movedPosition = pos.behind().flatMap(BoardPosition::left).flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
-        curr = pos.right().right().behind();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        // Check 1 behind, 2 right:
+        movedPosition = pos.behind().flatMap(BoardPosition::right).flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         return legalPositions;

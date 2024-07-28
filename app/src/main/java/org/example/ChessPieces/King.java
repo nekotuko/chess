@@ -1,63 +1,70 @@
 package org.example.ChessPieces;
 
 import org.example.BoardPosition;
-import org.example.BoardPosition.InvalidBoardPosition;
+import org.example.ChessBoard;
+
+import java.util.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class King extends ChessPiece {
-    King(char piece) {
-        super(piece);
+    King(char piece, ChessBoard board) {
+        super(piece, board);
     }
 
     @Override
-    public boolean[][] getAllPossiblePositions(BoardPosition pos) {
-        boolean[][] legalPositions = new boolean[8][8];
+    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+        List<BoardPosition> legalPositions = new ArrayList<>();
+
+        Optional<BoardPosition> movedPosition;
 
         // Check right:
-        BoardPosition curr = pos.right();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.right();
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check left:
-        curr = pos.left();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.left();
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check ahead:
-        curr = pos.ahead();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.ahead();
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check behind:
-        curr = pos.behind();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.behind();
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check ahead-right:
-        curr = pos.ahead().right();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.ahead().flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check ahead-left:
-        curr = pos.ahead().left();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.ahead().flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check behind-right:
-        curr = pos.behind().right();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.behind().flatMap(BoardPosition::right);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         // Check behind-left:
-        curr = pos.behind().left();
-        if (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
+        movedPosition = pos.behind().flatMap(BoardPosition::left);
+        if (!movedPosition.isEmpty()) {
+            legalPositions.add(movedPosition.get());
         }
 
         return legalPositions;

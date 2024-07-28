@@ -3,15 +3,19 @@ package org.example;
 import org.example.ChessPieces.ChessPiece;
 import org.example.ChessPieces.ChessPieceGenerator;
 
+import java.util.List;
+
 public class ChessBoard {
     private ChessPiece[][] mBoard;
 
     private BoardPosition mActivePiecePosition;
-    private boolean[][] mActivePieceLegalMoves;
+    private List<BoardPosition> mActivePieceLegalMoves;
+
+    private boolean mIsWhitesTurn = true;
 
     ChessBoard(String[] boardLayout) {
 
-        ChessPieceGenerator generator = new ChessPieceGenerator();
+        ChessPieceGenerator generator = new ChessPieceGenerator(this);
 
         // TODO: Check if it's useful to declare the size of 'mBoard' dynamically
         // instead of a fixed 8x8 size
@@ -28,22 +32,22 @@ public class ChessBoard {
     }
 
     char getPieceCharFromPos(BoardPosition pos) {
-        if (pos.isValid() && mBoard[pos.i][pos.j] != null) {
-            return mBoard[pos.i][pos.j].getmDisplayCharacter();
+        if (positionIsOccupied(pos)) {
+            return mBoard[pos.i][pos.j].getDisplayCharacter();
         } else {
             return ' ';
         }
     }
 
-    ChessPiece getPieceFromPos(BoardPosition pos) {
-        if (pos.isValid() && mBoard[pos.i][pos.j] != null) {
+    public ChessPiece getPieceFromPos(BoardPosition pos) {
+        if (positionIsOccupied(pos)) {
             return mBoard[pos.i][pos.j];
         } else {
             return null;
         }
     }
 
-    boolean positionIsOccupied(BoardPosition pos) {
+    public boolean positionIsOccupied(BoardPosition pos) {
         return (mBoard[pos.i][pos.j] != null);
     }
 
@@ -53,10 +57,11 @@ public class ChessBoard {
 
     boolean positionIsALegalMove(BoardPosition pos) {
         if (mActivePieceLegalMoves != null) {
-            return mActivePieceLegalMoves[pos.i][pos.j];
-        } else {
-            return false;
+            if (mActivePieceLegalMoves.contains(pos)) {
+                return true;
+            }
         }
+        return false;
     }
 
     void receiveInput(BoardPosition pos) {
@@ -69,8 +74,7 @@ public class ChessBoard {
 
         // Deactivate active piece
         if (pos.equals(mActivePiecePosition)) {
-            mActivePiecePosition = null;
-            mActivePieceLegalMoves = null;
+            deactivateActivePiece();
             return;
         }
 
@@ -79,31 +83,36 @@ public class ChessBoard {
             ChessPiece pieceAtPos = getPieceFromPos(pos);
             if (pieceAtPos != null) {
                 mActivePiecePosition = pos;
-                mActivePieceLegalMoves = pieceAtPos.getAllPossiblePositions(pos);
+                mActivePieceLegalMoves = pieceAtPos.getAllLegalPositions(pos);
             }
         } else { // Else move the piece if possible:
-
-            mBoard[pos.i][pos.j] = mBoard[mActivePiecePosition.i][mActivePiecePosition.j];
-            mBoard[mActivePiecePosition.i][mActivePiecePosition.j] = null;
-            mActivePiecePosition = null;
-
             movePiece(mActivePiecePosition, pos);
         }
     }
 
-    void movePiece(BoardPosition source, BoardPosition target) {
+    private void deactivateActivePiece() {
+        mActivePiecePosition = null;
+        mActivePieceLegalMoves = null;
+        return;
+    }
+
+    private void movePiece(BoardPosition source, BoardPosition target) {
+
+        // Check if the move is legal:
+        if (!mActivePieceLegalMoves.contains(target)) {
+            deactivateActivePiece();
+            return;
+        }
+
+        // Move the piece otherwise:
+
+        mBoard[target.i][target.j] = mBoard[source.i][source.j];
+        mBoard[source.i][source.j] = null;
 
         mActivePiecePosition = null;
         mActivePieceLegalMoves = null;
+
+        mIsWhitesTurn = !mIsWhitesTurn;
     }
-
-    // boolean[][] getActivePieceLe galPositions() {
-    // boolean[][] visited = new boolean[8][8];
-    // boolean[][] activePieceLegalMoves = new boolean[8][8];
-
-    // BoardPosition origin = mActivePiecePosition;
-    // visited[origin.i][origin.j] = true;
-
-    // }
 
 }
