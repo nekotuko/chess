@@ -1,5 +1,7 @@
 package org.example;
 
+import java.util.Optional;
+
 public class BoardPosition {
     public final int i;
     public final int j;
@@ -9,96 +11,40 @@ public class BoardPosition {
         this.j = j;
     }
 
-    // Singleton class to represent an invalid position. Useful for chaining moves:
-    public static class InvalidBoardPosition extends BoardPosition {
-        private static final InvalidBoardPosition mInstance = new InvalidBoardPosition();
-
-        private InvalidBoardPosition() {
-            super(-1, -1);
-        }
-
-        public static InvalidBoardPosition getInstance() {
-            return mInstance;
-        }
-
-        @Override
-        public boolean isValid() {
-            return false;
-        }
-
-        @Override
-        public BoardPosition right() {
-            return this;
-        }
-
-        @Override
-        public BoardPosition left() {
-            return this;
-        }
-
-        @Override
-        public BoardPosition ahead() {
-            return this;
-        }
-
-        @Override
-        public BoardPosition behind() {
-            return this;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj;
-        }
-    }
-
+    // A public factory method to create a BoardPosition object from given coordinates:
     public static BoardPosition fromCoords(int i, int j) {
-        if (isValid(i, j)) {
+        // Only create a BoardPosition object if the coordinates are within the 8x8 board:
+        if (i >= 0 && i < 8 && j >= 0 && j < 8) {
             return new BoardPosition(i, j);
         } else {
-            return InvalidBoardPosition.getInstance();
+            return null;
         }
-
     }
 
-    public boolean isValid() {
-        return i >= 0 && i < 8 && j >= 0 && j < 8;
-    }
-
-    private static boolean isValid(int i, int j) {
-        return i >= 0 && i < 8 && j >= 0 && j < 8;
-    }
-
-    public BoardPosition right() {
-        if (isValid(this.i, this.j + 1)) {
-            return new BoardPosition(this.i, this.j + 1);
+    // Private method to create an optional wrapped BoardPosition object:
+    private static Optional<BoardPosition> moveTo(int i, int j) {
+        BoardPosition targetPos = BoardPosition.fromCoords(i, j);
+        if (targetPos != null) {
+            return Optional.of(new BoardPosition(i, j));
         } else {
-            return InvalidBoardPosition.getInstance();
+            return Optional.empty();
         }
     }
 
-    public BoardPosition left() {
-        if (isValid(this.i, this.j - 1)) {
-            return new BoardPosition(this.i, this.j - 1);
-        } else {
-            return InvalidBoardPosition.getInstance();
-        }
+    public Optional<BoardPosition> right() {
+        return moveTo(this.i, this.j + 1);
     }
 
-    public BoardPosition ahead() {
-        if (isValid(this.i + 1, this.j)) {
-            return new BoardPosition(this.i + 1, this.j);
-        } else {
-            return InvalidBoardPosition.getInstance();
-        }
+    public Optional<BoardPosition> left() {
+        return moveTo(this.i, this.j - 1);
     }
 
-    public BoardPosition behind() {
-        if (isValid(this.i - 1, this.j)) {
-            return new BoardPosition(this.i - 1, this.j);
-        } else {
-            return InvalidBoardPosition.getInstance();
-        }
+    public Optional<BoardPosition> ahead() {
+        return moveTo(this.i + 1, this.j);
+    }
+
+    public Optional<BoardPosition> behind() {
+        return moveTo(this.i - 1, this.j);
     }
 
     // Overriden method to compare if two BoardPosition objects are equal:

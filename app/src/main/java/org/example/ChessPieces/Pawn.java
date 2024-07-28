@@ -1,69 +1,74 @@
 package org.example.ChessPieces;
 
 import org.example.BoardPosition;
-import org.example.BoardPosition.InvalidBoardPosition;
+import org.example.ChessBoard;
+
+import java.util.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
 
 // This is the only piece, the direction of which depends on its color.
 public class Pawn extends ChessPiece {
 
-    Pawn(char piece) {
-        super(piece);
+    Pawn(char piece, ChessBoard board) {
+        super(piece, board);
     }
 
     @Override
-    public boolean[][] getAllPossiblePositions(BoardPosition pos) {
-        boolean[][] legalPositions = new boolean[8][8];
+    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+        List<BoardPosition> legalPositions = new ArrayList<>();
 
-        // Check ahead if is white. Check if can move two steps ahead:
+        Optional<BoardPosition> movedPosition;
         if (this.isWhite()) {
-            BoardPosition curr = pos.ahead();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
+            // Check ahead if is white:
+            movedPosition = pos.ahead();
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
             }
 
+            // Check for two moves ahead from starting position:
             if (pos.i == 1) {
-                curr = pos.ahead().ahead();
-                if (!(curr instanceof InvalidBoardPosition)) {
-                    legalPositions[curr.i][curr.j] = true;
+                movedPosition = movedPosition.get().ahead();
+                if (!movedPosition.isEmpty()) {
+                    legalPositions.add(movedPosition.get());
                 }
             }
 
-            // Check if can take another piece. Whether there's a piece there will be
-            // checked by the ChessBoard class.:
-            curr = pos.ahead().left();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
-            }
-            curr = pos.ahead().right();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
-            }
-        }
-
-        // Check behind if is black
-        if (!this.isWhite()) {
-            BoardPosition curr = pos.behind();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
+            // Check for take moves:
+            movedPosition = pos.ahead().flatMap(BoardPosition::left);
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
             }
 
-            // Check if can move two steps behind:
+            movedPosition = pos.ahead().flatMap(BoardPosition::right);
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
+            }
+        } else {
+            // Check behind if is black:
+            movedPosition = pos.behind();
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
+            }
+
+            // Check for two moves behind from starting position:
             if (pos.i == 6) {
-                curr = pos.behind().behind();
-                if (!(curr instanceof InvalidBoardPosition)) {
-                    legalPositions[curr.i][curr.j] = true;
+                movedPosition = movedPosition.get().behind();
+                if (!movedPosition.isEmpty()) {
+                    legalPositions.add(movedPosition.get());
                 }
             }
 
-            // Check if can take another piece. Whether there's a piece there will be
-            // checked by the ChessBoard class.:
-            curr = pos.behind().left();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
+            // Check for take moves:
+            movedPosition = pos.behind().flatMap(BoardPosition::left);
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
             }
-            curr = pos.behind().right();
-            if (!(curr instanceof InvalidBoardPosition)) {
-                legalPositions[curr.i][curr.j] = true;
+
+            movedPosition = pos.behind().flatMap(BoardPosition::right);
+            if (!movedPosition.isEmpty()) {
+                legalPositions.add(movedPosition.get());
             }
         }
 

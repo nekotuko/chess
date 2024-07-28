@@ -1,43 +1,72 @@
 package org.example.ChessPieces;
 
 import org.example.BoardPosition;
-import org.example.BoardPosition.InvalidBoardPosition;
+import org.example.ChessBoard;
+
+import java.util.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Rook extends ChessPiece {
-    Rook(char piece) {
-        super(piece);
+    Rook(char piece, ChessBoard board) {
+        super(piece, board);
     }
 
     @Override
-    public boolean[][] getAllPossiblePositions(BoardPosition pos) {
-        boolean[][] legalPositions = new boolean[8][8];
-
-        // Check right:
-        BoardPosition curr = pos.right();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.right();
-        }
-
-        // Check left:
-        curr = pos.left();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.left();
-        }
+    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+        List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check ahead:
-        curr = pos.ahead();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.ahead();
+        Optional<BoardPosition> movedPosition = pos.ahead();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if(this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());;
+            movedPosition = movedPosition.get().ahead();
         }
 
         // Check behind:
-        curr = pos.behind();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.behind();
+        movedPosition = pos.behind();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().behind();
+        }
+
+        // Check right:
+        movedPosition = pos.right();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().right();
+        }
+
+        // Check left:
+        movedPosition = pos.left();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().left();
         }
 
         return legalPositions;

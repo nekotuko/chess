@@ -1,65 +1,129 @@
 package org.example.ChessPieces;
 
 import org.example.BoardPosition;
-import org.example.BoardPosition.InvalidBoardPosition;
+import org.example.ChessBoard;
+
+import java.util.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Queen extends ChessPiece {
-    Queen(char piece) {
-        super(piece);
+    Queen(char piece, ChessBoard board) {
+        super(piece, board);
     }
 
     @Override
-    public boolean[][] getAllPossiblePositions(BoardPosition pos) {
-        boolean[][] legalPositions = new boolean[8][8];
+    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+        List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check all diagonal moves:
-        BoardPosition curr = pos.ahead().left();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.ahead().left();
+        Optional<BoardPosition> movedPosition;
+
+        // Check ahead, left:
+        movedPosition = pos.ahead().flatMap(BoardPosition::left);
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().ahead().flatMap(BoardPosition::left);
         }
 
-        curr = pos.ahead().right();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.ahead().right();
+        // Check ahead, right:
+        movedPosition = pos.ahead().flatMap(BoardPosition::right);
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().ahead().flatMap(BoardPosition::right);
         }
 
-        curr = pos.behind().left();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.behind().left();
+        // Check behind, left:
+        movedPosition = pos.behind().flatMap(BoardPosition::left);
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().behind().flatMap(BoardPosition::left);
         }
 
-        curr = pos.behind().right();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.behind().right();
+        // Check behind, right:
+        movedPosition = pos.behind().flatMap(BoardPosition::right);
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().behind().flatMap(BoardPosition::right);
         }
 
         // Check all straight moves:
-        curr = pos.right();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.right();
+
+        // Check right:
+        movedPosition = pos.right();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().right();
         }
 
-        curr = pos.left();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.left();
+        // Check left:
+        movedPosition = pos.left();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().left();
         }
 
-        curr = pos.ahead();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.ahead();
+        // Check ahead:
+        movedPosition = pos.ahead();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().ahead();
         }
 
-        curr = pos.behind();
-        while (!(curr instanceof InvalidBoardPosition)) {
-            legalPositions[curr.i][curr.j] = true;
-            curr = curr.behind();
+        // Check behind:
+        movedPosition = pos.behind();
+        while (!movedPosition.isEmpty()) {
+            if (mBoard.positionIsOccupied(movedPosition.get())) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                    legalPositions.add(movedPosition.get());
+                }
+                break;
+            }
+            legalPositions.add(movedPosition.get());
+            movedPosition = movedPosition.get().behind();
         }
 
         return legalPositions;

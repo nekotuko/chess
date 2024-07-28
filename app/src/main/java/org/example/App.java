@@ -45,8 +45,7 @@ public class App {
             "1        1",
             " abcdefgh ",
     };
-
-    // TODO: Check if this is the best way to declare 'mBoardLayout'
+    
     private static String[] mBoardLayout = new String[] {
             "♜♞♝♛♚♝♞♜",
             "♟♟♟♟♟♟♟♟",
