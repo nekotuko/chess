@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Bishop extends ChessPiece {
-    Bishop(char piece, ChessBoard board) {
-        super(piece, board);
+    Bishop(ChessBoard board, char piece) {
+        super(board, piece, 3);
     }
 
     @Override

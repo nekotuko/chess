@@ -11,13 +11,16 @@ public abstract class ChessPiece {
     private char mDisplayCharacter;
     private boolean mIsWhite;
 
+    private int mPoints;
+
     ChessBoard mBoard;
 
-    public ChessPiece(char pieceDisplayCharacter, ChessBoard board) {
+    public ChessPiece(ChessBoard board, char pieceDisplayCharacter, int points) {
+        mBoard = board;
         mDisplayCharacter = pieceDisplayCharacter;
+        mPoints = points;
         mIsWhite = (pieceDisplayCharacter == '♙' || pieceDisplayCharacter == '♖' || pieceDisplayCharacter == '♘'
                 || pieceDisplayCharacter == '♗' || pieceDisplayCharacter == '♕' || pieceDisplayCharacter == '♔');
-        mBoard = board;
     }
 
     public boolean isWhite() {
@@ -30,6 +33,10 @@ public abstract class ChessPiece {
 
     public boolean canTake(ChessPiece piece) {
         return (piece.isWhite() != this.isWhite());
+    }
+
+    public int getPointValue() {
+        return mPoints;
     }
 
     public abstract List<BoardPosition> getAllLegalPositions(BoardPosition pos);
