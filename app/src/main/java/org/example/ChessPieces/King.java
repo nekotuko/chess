@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class King extends ChessPiece {
-    King(char piece, ChessBoard board) {
-        super(piece, board);
+    King(ChessBoard board, char piece) {
+        super(board, piece, 0);
     }
 
     @Override

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 // This is the only piece, the direction of which depends on its color.
 public class Pawn extends ChessPiece {
 
-    Pawn(char piece, ChessBoard board) {
-        super(piece, board);
+    Pawn(ChessBoard board, char piece) {
+        super(board, piece, 1);
     }
 
     @Override

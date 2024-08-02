@@ -45,7 +45,7 @@ public class App {
             "1        1",
             " abcdefgh ",
     };
-    
+
     private static String[] mBoardLayout = new String[] {
             "♜♞♝♛♚♝♞♜",
             "♟♟♟♟♟♟♟♟",

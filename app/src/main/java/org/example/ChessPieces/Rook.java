@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Rook extends ChessPiece {
-    Rook(char piece, ChessBoard board) {
-        super(piece, board);
+    Rook(ChessBoard board, char piece) {
+        super(board, piece, 5);
     }
 
     @Override
@@ -21,12 +21,13 @@ public class Rook extends ChessPiece {
         Optional<BoardPosition> movedPosition = pos.ahead();
         while (!movedPosition.isEmpty()) {
             if (mBoard.positionIsOccupied(movedPosition.get())) {
-                if(this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
+                if (this.canTake(mBoard.getPieceFromPos(movedPosition.get()))) {
                     legalPositions.add(movedPosition.get());
                 }
                 break;
             }
-            legalPositions.add(movedPosition.get());;
+            legalPositions.add(movedPosition.get());
+            ;
             movedPosition = movedPosition.get().ahead();
         }
 
