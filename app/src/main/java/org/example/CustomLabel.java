@@ -65,7 +65,7 @@ public class CustomLabel extends JLabel {
 
     void updateLegalMove() {
         if (!mBoard.positionIsActive(mPos)) {
-            if (mBoard.positionIsALegalMove(mPos)) {
+            if (mBoard.positionIsALegalMoveForActivePiece(mPos)) {
                 this.setBackground(Color.magenta);
             } else {
                 this.setBackground(mBackgroundColor);

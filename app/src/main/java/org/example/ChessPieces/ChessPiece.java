@@ -9,18 +9,19 @@ import java.util.List;
 // A generic class for all chess pieces.
 public abstract class ChessPiece {
     private char mDisplayCharacter;
+    private char mChessNotation;
     private boolean mIsWhite;
 
     private int mPoints;
 
     ChessBoard mBoard;
 
-    public ChessPiece(ChessBoard board, char pieceDisplayCharacter, int points) {
+    public ChessPiece(ChessBoard board, char displayCharacter, char chessNotation, int points) {
         mBoard = board;
-        mDisplayCharacter = pieceDisplayCharacter;
+        mDisplayCharacter = displayCharacter;
         mPoints = points;
-        mIsWhite = (pieceDisplayCharacter == '♙' || pieceDisplayCharacter == '♖' || pieceDisplayCharacter == '♘'
-                || pieceDisplayCharacter == '♗' || pieceDisplayCharacter == '♕' || pieceDisplayCharacter == '♔');
+        mIsWhite = (displayCharacter == '♙' || displayCharacter == '♖' || displayCharacter == '♘'
+                || displayCharacter == '♗' || displayCharacter == '♕' || displayCharacter == '♔');
     }
 
     public boolean isWhite() {
@@ -31,6 +32,10 @@ public abstract class ChessPiece {
         return mDisplayCharacter;
     }
 
+    public char getChessNotation() {
+        return mChessNotation;
+    }
+
     public boolean canTake(ChessPiece piece) {
         return (piece.isWhite() != this.isWhite());
     }
@@ -39,5 +44,5 @@ public abstract class ChessPiece {
         return mPoints;
     }
 
-    public abstract List<BoardPosition> getAllLegalPositions(BoardPosition pos);
+    public abstract List<BoardPosition> getAllLegalPositions();
 }

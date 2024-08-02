@@ -10,11 +10,12 @@ import java.util.ArrayList;
 
 public class Rook extends ChessPiece {
     Rook(ChessBoard board, char piece) {
-        super(board, piece, 5);
+        super(board, piece, 'R', 5);
     }
 
     @Override
-    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+    public List<BoardPosition> getAllLegalPositions() {
+        BoardPosition pos = mBoard.getPositionOfPiece(this);
         List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check ahead:
