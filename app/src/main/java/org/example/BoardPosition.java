@@ -2,6 +2,9 @@ package org.example;
 
 import java.util.Optional;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class BoardPosition {
     public final int i;
     public final int j;
@@ -11,9 +14,11 @@ public class BoardPosition {
         this.j = j;
     }
 
-    // A public factory method to create a BoardPosition object from given coordinates:
+    // A public factory method to create a BoardPosition object from given
+    // coordinates:
     public static BoardPosition fromCoords(int i, int j) {
-        // Only create a BoardPosition object if the coordinates are within the 8x8 board:
+        // Only create a BoardPosition object if the coordinates are within the 8x8
+        // board:
         if (i >= 0 && i < 8 && j >= 0 && j < 8) {
             return new BoardPosition(i, j);
         } else {
@@ -47,6 +52,17 @@ public class BoardPosition {
         return moveTo(this.i - 1, this.j);
     }
 
+    public static List<BoardPosition> getAllPossibleBoardPositions() {
+        List<BoardPosition> allPositions = new ArrayList<>();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                allPositions.add(new BoardPosition(i, j));
+            }
+        }
+        return allPositions;
+    }
+
     // Overriden method to compare if two BoardPosition objects are equal:
     @Override
     public boolean equals(Object obj) {
@@ -61,5 +77,17 @@ public class BoardPosition {
         // Cast the argument to 'BoardPosition' type, then compare the fields
         BoardPosition pos = (BoardPosition) obj;
         return this.i == pos.i && this.j == pos.j;
+    }
+
+    // Overridden method to base hashcode on the coordinates rather than the object:
+    @Override
+    public int hashCode() {
+        return 31 * i + j;
+    }
+
+    // Overridden method to return position represented in chess notation:
+    @Override
+    public String toString() {
+        return "(" + (char) ('a' + i) + ", " + j + ")";
     }
 }

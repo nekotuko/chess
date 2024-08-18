@@ -4,115 +4,198 @@ import org.example.ChessPieces.ChessPiece;
 import org.example.ChessPieces.ChessPieceGenerator;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Stack;
 
 public class ChessBoard {
-    private ChessPiece[][] mBoard;
 
-    private BoardPosition mActivePiecePosition;
-    private List<BoardPosition> mActivePieceLegalMoves;
+    private class Triplet {
+        ChessPiece mMovedPiece;
+        ChessPiece mCapturedPiece;
+        BoardPosition mTargetPos;
 
-    private boolean mIsWhitesTurn = true;
-
-    ChessBoard(String[] boardLayout) {
-
-        ChessPieceGenerator generator = new ChessPieceGenerator(this);
-
-        // TODO: Check if it's useful to declare the size of 'mBoard' dynamically
-        // instead of a fixed 8x8 size
-        mBoard = new ChessPiece[boardLayout.length][boardLayout[0].length()];
-
-        for (int i = 0; i < mBoard.length; i++) {
-            for (int j = 0; j < mBoard[i].length; j++) {
-                char currPiece = boardLayout[i].charAt(j);
-
-                // TODO: flip 'i' to match GUI ordering:
-                mBoard[7 - i][j] = generator.fromString(currPiece);
-            }
+        Triplet(ChessPiece movedPiece, ChessPiece capturedPiece, BoardPosition targetPos) {
+            mMovedPiece = movedPiece;
+            mCapturedPiece = capturedPiece;
+            mTargetPos = targetPos;
         }
     }
 
-    char getPieceCharFromPos(BoardPosition pos) {
-        if (positionIsOccupied(pos)) {
-            return mBoard[pos.i][pos.j].getDisplayCharacter();
+    // Bidirectional Piece and Position Lookup Map:
+    private class BiMap {
+        private final Map<ChessPiece, BoardPosition> mPiecePositionMap = new HashMap<>();
+        private final Map<BoardPosition, ChessPiece> mPositionPieceMap = new HashMap<>();
+
+        void put(ChessPiece piece, BoardPosition pos) {
+            mPiecePositionMap.put(piece, pos);
+            mPositionPieceMap.put(pos, piece);
+        }
+
+        BoardPosition getPositionOfPiece(ChessPiece piece) {
+            return mPiecePositionMap.get(piece);
+        }
+
+        ChessPiece getPieceAtPosition(BoardPosition pos) {
+            return mPositionPieceMap.get(pos);
+        }
+
+        void remove(ChessPiece piece) {
+            BoardPosition pos = getPositionOfPiece(piece);
+            mPiecePositionMap.remove(piece);
+            mPositionPieceMap.remove(pos);
+        }
+
+        void remove(BoardPosition pos) {
+            ChessPiece piece = getPieceAtPosition(pos);
+            mPiecePositionMap.remove(piece);
+            mPositionPieceMap.remove(pos);
+        }
+    }
+
+    private final BiMap mBoardMap = new BiMap();
+    private final Map<ChessPiece, List<BoardPosition>> mPieceLegalMovesMap = new HashMap<>();
+
+    private final Stack<Triplet> mMoveHistory = new Stack<>();
+    private ChessPiece mActivePiece;
+
+    private boolean mIsWhitesTurn = true;
+
+    private int mWhitePoints = 0;
+
+    private ChessPiece mKingIsInCheck;
+
+    private boolean mWhiteKingHasMoved;
+
+    private boolean mBlackKingHasMoved;
+
+    // Constructor:
+    ChessBoard(String[] boardLayout) {
+
+        ChessPieceGenerator generator = new ChessPieceGenerator(this);
+        BoardPosition currPosOnBoard;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece newPiece = generator.fromString(boardLayout[i].charAt(j));
+
+                if (newPiece != null) {
+                    // BoardPosition's 'i' is flipped to match the board layout:
+                    currPosOnBoard = BoardPosition.fromCoords(7 - i, j);
+
+                    mBoardMap.put(newPiece, currPosOnBoard);
+                    mPieceLegalMovesMap.put(newPiece, newPiece.getAllLegalPositions());
+                }
+            }
+        }
+
+        refreshPoints();
+    }
+
+    // Getters for exernal classes:
+    public char getPieceCharFromPos(BoardPosition pos) {
+        ChessPiece piece = mBoardMap.getPieceAtPosition(pos);
+        if (piece != null) {
+            return piece.getDisplayCharacter();
         } else {
             return ' ';
         }
     }
 
+    public BoardPosition getPositionOfPiece(ChessPiece piece) {
+        return mBoardMap.getPositionOfPiece(piece);
+    }
+
     public ChessPiece getPieceFromPos(BoardPosition pos) {
-        if (positionIsOccupied(pos)) {
-            return mBoard[pos.i][pos.j];
-        } else {
-            return null;
-        }
+        return mBoardMap.getPieceAtPosition(pos);
     }
 
     public boolean positionIsOccupied(BoardPosition pos) {
-        return (mBoard[pos.i][pos.j] != null);
+        return mBoardMap.getPieceAtPosition(pos) != null;
+    }
+
+    public boolean positionIsALegalMoveForActivePiece(BoardPosition pos) {
+        if (mActivePiece != null) {
+            return mPieceLegalMovesMap.get(mActivePiece).contains(pos);
+        } else {
+            return false;
+        }
+    }
+
+    // Method to refresh the points on the board:
+    private void refreshPoints() {
+        // Reset scores:
+        mWhitePoints = 0;
+
+        // Calculate points:
+        for (ChessPiece piece : mBoardMap.mPiecePositionMap.keySet()) {
+            if (piece.isWhite()) {
+                mWhitePoints += piece.getPointValue();
+            } else {
+                mWhitePoints -= piece.getPointValue();
+            }
+        }
+
+        // TODO: Temp output into terminal:
+        String str = (mWhitePoints < 0) ? "B: +" + mWhitePoints * (-1) : "W: +" + mWhitePoints;
+        System.out.println(str);
     }
 
     boolean positionIsActive(BoardPosition pos) {
-        return (pos.equals(mActivePiecePosition));
+        return (pos.equals(mBoardMap.getPositionOfPiece(mActivePiece)));
     }
 
-    boolean positionIsALegalMove(BoardPosition pos) {
-        if (mActivePieceLegalMoves != null) {
-            if (mActivePieceLegalMoves.contains(pos)) {
-                return true;
+    void receiveInput(BoardPosition clickedPos) {
+        ChessPiece clickedPiece = mBoardMap.getPieceAtPosition(clickedPos);
+        // If there's already an active piece:
+        if (mActivePiece != null) {
+            // Deactivate if the active piece is clicked twice, or if the position is not a
+            // legal move for the active piece:
+            if (clickedPiece == mActivePiece || !mPieceLegalMovesMap.get(mActivePiece).contains(clickedPos)) {
+                mActivePiece = null;
+                return;
+            } else { // Else, move the piece, update legal moves, refresh points, then check if
+                // there's an active check:
+                movePiece(mActivePiece, clickedPos);
+                mActivePiece = null;
+                mIsWhitesTurn = !mIsWhitesTurn;
+                updateAllLegalMoves();
+                refreshPoints();
+                checkForCheck();
+            }
+        } else { // If there's no active piece, activate:
+            if (clickedPiece != null && clickedPiece.isWhite() == mIsWhitesTurn) {
+                mActivePiece = clickedPiece;
             }
         }
-        return false;
     }
 
-    void receiveInput(BoardPosition pos) {
-        // Avoid even passing pos if it's null
-        // TODO this can never be null as it's only called by CustomLabel listener, that
-        // only stores valid BoardPositions
-        if (pos == null) {
-            return;
+    // TODO: Check if movePiece is better as a 'ChessBoard' or 'BiMap' method.
+    // Putting it under 'BiMap' would require making 'mPieceLegalMovesMap' a field
+    // of 'BiMap'. Removing pieces in one of the methods within 'ChessBoard' feels
+    // more bug prone.
+    void movePiece(ChessPiece piece, BoardPosition targetPos) {
+        // If there's a piece at the target position, remove it:
+        ChessPiece pieceToRemove = mBoardMap.getPieceAtPosition(targetPos);
+        if (pieceToRemove != null) {
+            mBoardMap.remove(pieceToRemove);
+            mPieceLegalMovesMap.remove(pieceToRemove);
         }
+        mMoveHistory.push(new Triplet(piece, pieceToRemove, targetPos));
+        mBoardMap.remove(piece);
+        mBoardMap.put(piece, targetPos);
+        // TODO: Print last move to terminal:
+        System.out.println(mMoveHistory.peek().mMovedPiece.getDisplayCharacter() + " to " + targetPos.toString());
+    }
 
-        // Deactivate active piece
-        if (pos.equals(mActivePiecePosition)) {
-            deactivateActivePiece();
-            return;
-        }
-
-        // Activate a position if no position is active:
-        if (mActivePiecePosition == null) {
-            ChessPiece pieceAtPos = getPieceFromPos(pos);
-            if (pieceAtPos != null) {
-                mActivePiecePosition = pos;
-                mActivePieceLegalMoves = pieceAtPos.getAllLegalPositions(pos);
-            }
-        } else { // Else move the piece if possible:
-            movePiece(mActivePiecePosition, pos);
+    private void updateAllLegalMoves() {
+        for (ChessPiece piece : mPieceLegalMovesMap.keySet()) {
+            mPieceLegalMovesMap.put(piece, piece.getAllLegalPositions());
         }
     }
 
-    private void deactivateActivePiece() {
-        mActivePiecePosition = null;
-        mActivePieceLegalMoves = null;
-        return;
-    }
+    private void checkForCheck() {
 
-    private void movePiece(BoardPosition source, BoardPosition target) {
-
-        // Check if the move is legal:
-        if (!mActivePieceLegalMoves.contains(target)) {
-            deactivateActivePiece();
-            return;
-        }
-
-        // Move the piece otherwise:
-
-        mBoard[target.i][target.j] = mBoard[source.i][source.j];
-        mBoard[source.i][source.j] = null;
-
-        mActivePiecePosition = null;
-        mActivePieceLegalMoves = null;
-
-        mIsWhitesTurn = !mIsWhitesTurn;
     }
 
 }

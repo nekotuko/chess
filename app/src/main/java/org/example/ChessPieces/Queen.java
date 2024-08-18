@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Queen extends ChessPiece {
-    Queen(char piece, ChessBoard board) {
-        super(piece, board);
+    Queen(ChessBoard board, char piece) {
+        super(board, piece, 'Q', 9);
     }
 
     @Override
-    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+    public List<BoardPosition> getAllLegalPositions() {
+        BoardPosition pos = mBoard.getPositionOfPiece(this);
         List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check all diagonal moves:

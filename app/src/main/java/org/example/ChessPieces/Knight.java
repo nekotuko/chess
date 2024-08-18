@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Knight extends ChessPiece {
-    Knight(char piece, ChessBoard board) {
-        super(piece, board);
+    Knight(ChessBoard board, char piece) {
+        super(board, piece, 'N', 3);
     }
 
     @Override
-    public List<BoardPosition> getAllLegalPositions(BoardPosition pos) {
+    public List<BoardPosition> getAllLegalPositions() {
+        BoardPosition pos = mBoard.getPositionOfPiece(this);
         List<BoardPosition> legalPositions = new ArrayList<>();
 
         // Check all L shaped moves:

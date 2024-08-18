@@ -15,22 +15,22 @@ public class ChessPieceGenerator {
         switch (piece) {
             case '♙':
             case '♟':
-                return new Pawn(piece, mBoard);
+                return new Pawn(mBoard, piece);
             case '♖':
             case '♜':
-                return new Rook(piece, mBoard);
+                return new Rook(mBoard, piece);
             case '♘':
             case '♞':
-                return new Knight(piece, mBoard);
+                return new Knight(mBoard, piece);
             case '♗':
             case '♝':
-                return new Bishop(piece, mBoard);
+                return new Bishop(mBoard, piece);
             case '♕':
             case '♛':
-                return new Queen(piece, mBoard);
+                return new Queen(mBoard, piece);
             case '♔':
             case '♚':
-                return new King(piece, mBoard);
+                return new King(mBoard, piece);
         }
 
         return null;
